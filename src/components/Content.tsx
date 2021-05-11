@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
 
 import { MovieCard } from './MovieCard';
+import { Header } from './Header';
 
 import '../styles/content.scss';
 
 import { api } from '../services/api';
-
-interface GenreResponseProps {
-  id: number;
-  name: 'action' | 'comedy' | 'documentary' | 'drama' | 'horror' | 'family';
-  title: string;
-}
 
 interface MovieProps {
   imdbID: string;
@@ -26,24 +21,18 @@ interface MovieProps {
 export function Content({state}) {
   
   const [movies, setMovies] = useState<MovieProps[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState<GenreResponseProps>({} as GenreResponseProps);
-
+  
   useEffect(() => {
     api.get<MovieProps[]>(`movies/?Genre_id=${state.selectedGenreId}`).then(response => {
       setMovies(response.data);
     });
+  }, [state.selectedGenreId]); 
 
-    api.get<GenreResponseProps>(`genres/${state.selectedGenreId}`).then(response => {
-      setSelectedGenre(response.data);
-    })
-  }, [state.selectedGenreId]);
-  
   return (
     <div className="container">
-     {/* <Header state={state} /> */}
-     <header>
-          <span className="category">Categoria:<span> {selectedGenre.title}</span></span>
-      </header> 
+
+      <Header state={state} /> 
+      
       <main>
         <div className="movies-list">
           {movies.map(movie => (
@@ -51,7 +40,7 @@ export function Content({state}) {
           ))}
         </div>
       </main>
-
+      
     </div>
   )
 }
